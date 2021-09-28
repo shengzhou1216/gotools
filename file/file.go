@@ -1,11 +1,13 @@
 package file
 
 import (
+	"github.com/shengzhou1216/gotools/directory"
 	"io"
 	"os"
+	"path"
 )
 
-// Copy file from source to dest.
+// Copy file from source to dest. dest file directory should be pre-created.
 func Copy(source, dest string) error {
 	s, err := os.Open(source)
 	if err != nil {
@@ -24,9 +26,13 @@ func Copy(source, dest string) error {
 	return nil
 }
 
-// Write  bytes to file
+// Write  bytes to file. if dest's parent directory is not exists, it will be auto crated.
 func Write(b []byte, dest string) error {
-	f, err := os.Open(dest)
+	// ensure parent dir exists
+	if err := directory.Ensure(path.Dir(dest)); err != nil {
+		return err
+	}
+	f, err := os.Create(dest)
 	if err != nil {
 		return nil
 	}
@@ -36,12 +42,18 @@ func Write(b []byte, dest string) error {
 	return nil
 }
 
-// WriteString write string to file
+// WriteString write string to dest. if dest's parent directory is not exists, it will be auto crated.
+// if dest is exists,it's content will be replaced by string s.
 func WriteString(s string, dest string) error {
-	f, err := os.Open(dest)
-	if err != nil {
-		return nil
+	// ensure parent dir exists
+	if err := directory.Ensure(path.Dir(dest)); err != nil {
+		return err
 	}
+	f, err := os.Create(dest)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
 	if _, err := f.WriteString(s); err != nil {
 		return err
 	}

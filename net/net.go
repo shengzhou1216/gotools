@@ -48,7 +48,7 @@ func UploadFile(url string, f *os.File) (*http.Response, error) {
 	return Upload(url, f, f.Name())
 }
 
-// UploadPath upload file by path.
+// UploadPath upload file by directory.
 func UploadPath(url string, fullpath string) (resp *http.Response, err error) {
 	f, err := os.Open(fullpath)
 	if err != nil {

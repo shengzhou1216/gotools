@@ -1,13 +1,13 @@
-package path
+package directory
 
 import (
 	"io"
 	"os"
 )
 
-// Exists check if path(dir/file) exists.
-func Exists(path string) (bool, error) {
-	_, err := os.Stat(path)
+// Exists check if directory(dir/file) exists.
+func Exists(dir string) (bool, error) {
+	_, err := os.Stat(dir)
 	if err == nil {
 		return true, nil
 	}
@@ -33,8 +33,18 @@ func CreateDirs(dirs ...string) error {
 	return nil
 }
 
-// IsEmptyDir check if dir is empty
-func IsEmptyDir(dir string) (bool, error) {
+// RemoveDirs remove multiple dirs
+func RemoveDirs(dirs ...string) error {
+	for _, v := range dirs {
+		if err := os.RemoveAll(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// IsEmpty check if dir is empty
+func IsEmpty(dir string) (bool, error) {
 	f, err := os.Open(dir)
 	if err != nil {
 		return false, err
@@ -42,21 +52,21 @@ func IsEmptyDir(dir string) (bool, error) {
 	defer f.Close()
 	_, err = f.Readdirnames(1)
 	if err == io.EOF {
-		return false, err
+		return true, nil
 	}
-	return true, nil
+	return false, nil
 }
 
-// EnsurePath ensure path is exists.
-func EnsurePath(p string) error {
-	exists, err := Exists(p)
+// Ensure ensure directory is exists.
+func Ensure(dir string) error {
+	exists, err := Exists(dir)
 	if err != nil {
 		return err
 	}
 	if exists {
 		return nil
 	}
-	if err := os.MkdirAll(p, os.ModePerm); err != nil {
+	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
 		return err
 	}
 	return nil
