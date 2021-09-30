@@ -3,6 +3,7 @@ package file
 import (
 	"github.com/shengzhou1216/gotools/directory"
 	"io"
+	"io/ioutil"
 	"os"
 	"path"
 )
@@ -59,3 +60,18 @@ func WriteString(s string, dest string) error {
 	}
 	return nil
 }
+
+// ReadBytes read file as bytes
+func ReadBytes(dest string) ([]byte, error) {
+	return ioutil.ReadFile(dest)
+}
+
+// ReadString read file content as string
+func ReadString(dest string) (string, error) {
+	bytes, err := ioutil.ReadFile(dest)
+	if err != nil {
+		return "", err
+	}
+	return string(bytes), nil
+}
+
